@@ -20,7 +20,7 @@ export default async function Home() {
     }
 
   }catch (error) {
-    toast.error("Erro ao verificar o login" + error)
+    console.log("Erro ao verificar o login", error)
   }finally {
     if(isLoggedIn) redirect("/chat", RedirectType.replace)
   }
