@@ -15,8 +15,8 @@ import Discord from "@/assets/discord.svg";
 import { Label } from "@/components/ui/label";
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { toast } from 'sonner';
-import { error } from 'node:console';
-import { redirect } from 'next/navigation';
+import { useRouter } from 'next/navigation';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
 const formSchema = z.object({
   email: z.string({
@@ -30,6 +30,8 @@ const formSchema = z.object({
 
 export default function SignIn() {
 
+  const router = useRouter()
+
     const form = useForm<z.infer<typeof formSchema>>({
       resolver: zodResolver(formSchema),
       defaultValues: {
@@ -39,7 +41,19 @@ export default function SignIn() {
     });
   
     async function onSubmit(values: z.infer<typeof formSchema>) {
-      console.log(values);
+      try {
+        const supabase = createClientComponentClient()
+        const {email, password} = values;
+        const { error, data: {session} } = await supabase.auth.signInWithPassword({
+          email,
+          password
+        })
+
+        form.reset()
+        router.replace("/chat")
+      } catch (error) {
+        toast.error("Aconteceu um erro. Por favor, tente novamente!" + error)
+      }
     }
   
 
@@ -76,7 +90,7 @@ export default function SignIn() {
             )}
           />
 
-          <Button type="submit" variant="secondary" className="w-96 cursor-pointer max-sm:w-80 ">Criar conta</Button>
+          <Button type="submit" variant="secondary" className="w-96 cursor-pointer max-sm:w-80 ">Entrar</Button>
         </form>
       </Form>
 
