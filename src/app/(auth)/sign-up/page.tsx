@@ -14,6 +14,9 @@ import Discord from "@/assets/discord.svg";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import { toast } from "sonner";
+import { redirect, useRouter } from "next/navigation";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 const formSchema = z.object({
   email: z.string({
@@ -34,6 +37,7 @@ const formSchema = z.object({
 })
 
 export default function SignIn() {
+  const router = useRouter()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -46,7 +50,34 @@ export default function SignIn() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+
+    try {
+      const supabase = createClientComponentClient()
+      const { email, password } = values
+
+      const { error, data: {user} } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${location.origin}/auth/callback`
+        }
+      })
+
+      if(user) {
+        form.reset()
+        router.push("/sign-in")
+      }
+
+    } catch (error) {
+      toast.error('Aconteceu algo de errado' + error)
+    }
+
+    toast.success('Conta criada com sucesso', {
+      action: {
+        label: 'Fazer login',
+        onClick: () =>  redirect("/sign-in")
+      }
+    })
   }
 
 

@@ -14,6 +14,9 @@ import Apple from "@/assets/apple.svg";
 import Discord from "@/assets/discord.svg";
 import { Label } from "@/components/ui/label";
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
+import { toast } from 'sonner';
+import { error } from 'node:console';
+import { redirect } from 'next/navigation';
 
 const formSchema = z.object({
   password: z.string({
