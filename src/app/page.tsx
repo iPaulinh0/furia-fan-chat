@@ -6,16 +6,23 @@ import { Button } from '@/components/ui/button'
 import Image from 'next/image'
 import Link from 'next/link'
 import { toast } from "sonner"
+import { redirect, RedirectType } from "next/navigation"
 
-export default function Home() {
+export default async function Home() {
 
   let isLoggedIn = false
   try {
-    const supabase = createServerComponentClient({ cookies: () => document.cookie })
-    const { data } = await supabase.auth.getSession()
-    isLoggedIn = data.session !== null
+    const supabase = createServerComponentClient({ cookies })
+    const { data: {session} } = await supabase.auth.getSession()
+
+    if(session) {
+      isLoggedIn = true
+    }
+
   }catch (error) {
     toast.error("Erro ao verificar o login" + error)
+  }finally {
+    if(isLoggedIn) redirect("/chat", RedirectType.replace)
   }
 
   return(
