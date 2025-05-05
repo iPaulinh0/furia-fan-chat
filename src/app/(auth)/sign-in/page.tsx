@@ -19,13 +19,12 @@ import { error } from 'node:console';
 import { redirect } from 'next/navigation';
 
 const formSchema = z.object({
+  email: z.string({
+      required_error: "E-mail é obrigatório",
+    }).email("E-mail inválido"),
   password: z.string({
     required_error: "Senha é obrigatória",
   }).min(8, "Senha deve ter pelo menos 8 caracteres"),
-
-  username: z.string({
-    required_error: "Nome de usuário é obrigatório",
-  }).min(3, "Nome de usuário deve ter pelo menos 3 caracteres"),
 })
 
 
@@ -34,8 +33,8 @@ export default function SignIn() {
     const form = useForm<z.infer<typeof formSchema>>({
       resolver: zodResolver(formSchema),
       defaultValues: {
+        email: "",
         password: "",
-        username: "",
       },
     });
   
@@ -48,15 +47,15 @@ export default function SignIn() {
     <div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col items-center justify-center gap-4 mb-4">
-        <h1 className="text-2xl font-bold text-zinc-100">Crie sua conta</h1>
+        <h1 className="text-2xl font-bold text-zinc-100">Entre com sua conta</h1>
           <FormField 
             control={form.control}
-            name="username"
+            name="email"
             render={({ field }) => (
               <FormItem className="w-96 max-sm:w-80">
-                <Label htmlFor="text" className="text-zinc-100 text-base">Usuário</Label>
+                <Label htmlFor="text" className="text-zinc-100 text-base">E-mail</Label>
                 <FormControl>
-                  <Input type="text" {...field} placeholder="Digite seu nome de usuário" className="text-zinc-200 max-sm:h-10"/>
+                  <Input type="text" {...field} placeholder="Digite seu nome e-mail" className="text-zinc-200 max-sm:h-10"/>
                 </FormControl>
                 <FormMessage />
               </FormItem>

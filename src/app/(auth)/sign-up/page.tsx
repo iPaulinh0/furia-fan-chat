@@ -59,7 +59,7 @@ export default function SignIn() {
         email,
         password,
         options: {
-          emailRedirectTo: `${location.origin}/auth/callback`
+          emailRedirectTo: `${location.origin}/callback`
         }
       })
 
@@ -72,11 +72,9 @@ export default function SignIn() {
       toast.error('Aconteceu algo de errado' + error)
     }
 
-    toast.success('Conta criada com sucesso', {
-      action: {
-        label: 'Fazer login',
-        onClick: () =>  redirect("/sign-in")
-      }
+    toast.success('Conta criada com sucesso!', {
+      description: "Agora confirme sua conta com seu e-mail.",
+      position: "top-center"
     })
   }
 
