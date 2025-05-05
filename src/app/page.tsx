@@ -1,10 +1,23 @@
+import { createServerComponentClient } from "@supabase/auth-helpers-nextjs"
+import { cookies } from "next/headers"
 import Furia from '@/assets/logo.png'
 import FuriaLogo from '@/assets/logo-furia.png'
 import { Button } from '@/components/ui/button'
 import Image from 'next/image'
 import Link from 'next/link'
+import { toast } from "sonner"
 
 export default function Home() {
+
+  let isLoggedIn = false
+  try {
+    const supabase = createServerComponentClient({ cookies: () => document.cookie })
+    const { data } = await supabase.auth.getSession()
+    isLoggedIn = data.session !== null
+  }catch (error) {
+    toast.error("Erro ao verificar o login" + error)
+  }
+
   return(
     <div className="flex flex-col items-center justify-center min-h-screen max-w-[980px] m-auto max-sm:p-4 max-sm:min-h-dvh">
       
