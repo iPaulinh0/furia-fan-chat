@@ -1,5 +1,8 @@
 'use client';
 
+import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
@@ -10,51 +13,110 @@ import Apple from "@/assets/apple.svg";
 import Discord from "@/assets/discord.svg";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { toast } from "sonner";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
+
+const formSchema = z.object({
+  email: z.string({
+    required_error: "E-mail é obrigatório",
+  }).email("E-mail inválido"),
+
+  password: z.string({
+    required_error: "Senha é obrigatória",
+  }).min(8, "Senha deve ter pelo menos 8 caracteres"),
+
+  username: z.string({
+    required_error: "Nome de usuário é obrigatório",
+  }).min(3, "Nome de usuário deve ter pelo menos 3 caracteres"),
+
+  terms: z.string({
+    message: "Você deve aceitar os termos e condições",
+  }) 
+})
 
 export default function SignIn() {
 
-  function handleSubmit() {
-    toast.success("Conta criada com sucesso!", {
-      description: "Agora você pode fazer login e começar a usar o aplicativo.",
-      duration: 3000,
-      action: {
-        label: "Fazer login",
-        onClick: () => {
-          window.location.href = "/sign-in";
-        },
-      },
-    });
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      username: "",
+      terms: "",
+    },
+  });
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log(values);
   }
+
 
   return(
     <div>
-
-      <form className="flex flex-col items-center justify-center gap-4 mb-4">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col items-center justify-center gap-4 mb-4">
         <h1 className="text-2xl font-bold text-zinc-100">Crie sua conta</h1>
-        <div>
-          <Label htmlFor="text" className="text-zinc-100 mb-2 text-base">Usuário</Label>
-          <Input type="text" placeholder="Crie seu nome de usuário" className="w-96 text-zinc-200 max-sm:h-10 max-sm:w-80"/>
-        </div>
+          <FormField 
+            control={form.control}
+            name="username"
+            render={({ field }) => (
+              <FormItem className="w-96 max-sm:w-80">
+                <Label htmlFor="text" className="text-zinc-100 text-base">Usuário</Label>
+                <FormControl>
+                  <Input type="text" {...field} placeholder="Crie seu nome de usuário" className="text-zinc-200 max-sm:h-10"/>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <div>
-          <Label htmlFor="email" className="text-zinc-100 mb-2 text-base">E-mail</Label>
-          <Input type="email" placeholder="Digite seu e-mail" className="w-96 text-zinc-200 max-sm:h-10 max-sm:w-80"/>
-        </div>
+          <FormField 
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem className="w-96 max-sm:w-80">
+                <Label htmlFor="text" className="text-zinc-100 text-base">E-mail</Label>
+                <FormControl>
+                  <Input type="email" {...field} placeholder="Digite seu e-mail" className="text-zinc-200 max-sm:h-10"/>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <div>
-          <Label htmlFor="password" className="text-zinc-100 mb-2 text-base">Senha</Label>
-          <Input type="password" placeholder="Crie uma senha" className="w-96 text-zinc-200 max-sm:h-10 max-sm:w-80"/>
-        </div>
+          <FormField 
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem className="w-96 max-sm:w-80">
+                <Label htmlFor="text" className="text-zinc-100 text-base">Senha</Label>
+                <FormControl>
+                  <Input type="password" {...field} placeholder="Crie uma senha" className="text-zinc-200 max-sm:h-10"/>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <div className="flex flex-row items-center gap-2">
-          <Checkbox className="mb-1"/>
-          <Label className="text-zinc-100 mb-2 text-base">Aceito todos os <span className="underline cursor-pointer hover:text-zinc-400">termos e condições</span></Label>
-        </div>
-      </form>
+          <FormField 
+            control={form.control}
+            name="terms"
+            render={({ field }) => (
+              <FormItem className="flex flex-col items-center">
+                <div className="flex flex-row items-center gap-2">
+                  <FormControl>
+                    <Checkbox {...field} className="cursor-pointer"/>
+                  </FormControl>
+                    <Label className="text-zinc-100 text-base">Aceito todos os <span className="underline cursor-pointer hover:text-zinc-400">termos e condições</span></Label>
+                </div>
+                <FormMessage className=""/>
+              </FormItem>
+            )}
+          />
+
+          <Button type="submit" variant="secondary" className="w-96 cursor-pointer max-sm:w-80 ">Criar conta</Button>
+        </form>
+      </Form>
         
-      <Button variant="secondary" onClick={handleSubmit} className="w-96 cursor-pointer max-sm:w-80">Criar conta</Button>
-
       <Separator className="my-4" />
 
       <div className="flex flex-row items-center justify-center gap-4">
