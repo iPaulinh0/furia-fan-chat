@@ -51,6 +51,11 @@ export default function SignIn() {
           password
         })
 
+        if(error) {
+          toast.error("E-mail ou senha incorretos.")
+          return
+        }
+
         reset()
         router.replace("/chat")
       } catch (error) {
