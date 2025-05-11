@@ -39,15 +39,17 @@ const formSchema = z.object({
 export default function SignIn() {
   const router = useRouter()
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const formMethods = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
       password: "",
       username: "",
-      terms: "",
-    },
-  });
+      terms: ""
+    }
+  })
+
+  const {reset, handleSubmit, control, formState: {isSubmitting}} = formMethods
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
 
@@ -64,7 +66,7 @@ export default function SignIn() {
       })
 
       if(user) {
-        form.reset()
+        reset()
         router.push("/sign-in")
       }
 
@@ -81,11 +83,11 @@ export default function SignIn() {
 
   return(
     <div>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col items-center justify-center gap-4 mb-4">
+      <Form {...formMethods}>
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col items-center justify-center gap-4 mb-4">
         <h1 className="text-2xl font-bold text-zinc-100">Crie sua conta</h1>
           <FormField 
-            control={form.control}
+            control={control}
             name="username"
             render={({ field }) => (
               <FormItem className="w-96 max-sm:w-80">
@@ -99,7 +101,7 @@ export default function SignIn() {
           />
 
           <FormField 
-            control={form.control}
+            control={control}
             name="email"
             render={({ field }) => (
               <FormItem className="w-96 max-sm:w-80">
@@ -113,7 +115,7 @@ export default function SignIn() {
           />
 
           <FormField 
-            control={form.control}
+            control={control}
             name="password"
             render={({ field }) => (
               <FormItem className="w-96 max-sm:w-80">
@@ -127,7 +129,7 @@ export default function SignIn() {
           />
 
           <FormField 
-            control={form.control}
+            control={control}
             name="terms"
             render={({ field }) => (
               <FormItem className="flex flex-col items-center">
@@ -142,7 +144,7 @@ export default function SignIn() {
             )}
           />
 
-          <Button type="submit" variant="secondary" className="w-96 cursor-pointer max-sm:w-80 ">Criar conta</Button>
+          <Button type="submit" disabled={isSubmitting} variant="secondary" className="w-96 cursor-pointer max-sm:w-80 ">Criar conta</Button>
         </form>
       </Form>
         

@@ -32,13 +32,15 @@ export default function SignIn() {
 
   const router = useRouter()
 
-    const form = useForm<z.infer<typeof formSchema>>({
+
+    const formMethods = useForm<z.infer<typeof formSchema>>({
       resolver: zodResolver(formSchema),
       defaultValues: {
         email: "",
-        password: "",
-      },
-    });
+        password: ""
+      }
+    })
+    const {reset, control, handleSubmit, formState: {isSubmitting}} = formMethods
   
     async function onSubmit(values: z.infer<typeof formSchema>) {
       try {
@@ -49,7 +51,7 @@ export default function SignIn() {
           password
         })
 
-        form.reset()
+        reset()
         router.replace("/chat")
       } catch (error) {
         toast.error("Aconteceu um erro. Por favor, tente novamente!" + error)
@@ -59,11 +61,11 @@ export default function SignIn() {
 
   return(
     <div>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col items-center justify-center gap-4 mb-4">
+      <Form {...formMethods}>
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col items-center justify-center gap-4 mb-4">
         <h1 className="text-2xl font-bold text-zinc-100">Entre com sua conta</h1>
           <FormField 
-            control={form.control}
+            control={control}
             name="email"
             render={({ field }) => (
               <FormItem className="w-96 max-sm:w-80">
@@ -77,7 +79,7 @@ export default function SignIn() {
           />
 
           <FormField 
-            control={form.control}
+            control={control}
             name="password"
             render={({ field }) => (
               <FormItem className="w-96 max-sm:w-80">
@@ -90,7 +92,7 @@ export default function SignIn() {
             )}
           />
 
-          <Button type="submit" variant="secondary" className="w-96 cursor-pointer max-sm:w-80 ">Entrar</Button>
+          <Button type="submit" disabled={isSubmitting} variant="secondary" className="w-96 cursor-pointer max-sm:w-80 ">Entrar</Button>
         </form>
       </Form>
 
