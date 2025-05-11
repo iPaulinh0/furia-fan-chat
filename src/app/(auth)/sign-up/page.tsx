@@ -31,9 +31,9 @@ const formSchema = z.object({
     required_error: "Nome de usuário é obrigatório",
   }).min(3, "Nome de usuário deve ter pelo menos 3 caracteres"),
 
-  terms: z.string({
-    message: "Você deve aceitar os termos e condições",
-  }) 
+  terms: z.boolean().refine(value => value, {
+    message: "Você deve aceitar os termos e condições."
+  })
 })
 
 export default function SignIn() {
@@ -45,7 +45,7 @@ export default function SignIn() {
       email: "",
       password: "",
       username: "",
-      terms: ""
+      terms: false
     }
   })
 
@@ -135,7 +135,7 @@ export default function SignIn() {
               <FormItem className="flex flex-col items-center">
                 <div className="flex flex-row items-center gap-2">
                   <FormControl>
-                    <Checkbox {...field} className="cursor-pointer"/>
+                    <Checkbox checked={field.value}  className="cursor-pointer"/>
                   </FormControl>
                     <Label className="text-zinc-100 text-base">Aceito todos os <span className="underline cursor-pointer hover:text-zinc-400">termos e condições</span></Label>
                 </div>
